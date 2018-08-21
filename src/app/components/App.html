@@ -1,0 +1,205 @@
+<svelte:window
+    on:keyup="onkeyup(event)"
+    on:keydown="onkeydown(event)"
+/>
+<svelte:head>
+    <title>Seeboard</title>
+</svelte:head>
+<div class="app">
+    <div class="text">
+        <div>
+        {#each letters as letter}
+        <span class="{letter.isDone ? 'done' : (letter.isTarget ? 'target' : '')}">
+            {letter.char}
+        </span>
+        {/each}
+        </div>
+    </div>
+    <div class="keyboard">
+        <Keyboard
+            {targetChar}
+            {pressedChars}
+        />
+    </div>
+</div>
+
+<script>
+    import _ from "lamb";
+    import WORDS from "../../../data/words.json";
+
+    const WORDS_AMOUNT_MAX = 3;
+
+    const pickRandomWord = () => {
+        const w_index = Math.round((WORDS.length - 1) * Math.random());
+        return _.getIndex(WORDS, w_index);
+    }
+
+    const makeNewText = () => {
+        const wordsAmount = Math.round(WORDS_AMOUNT_MAX * Math.random());
+        const words = _.map(_.range(0, wordsAmount + 1), pickRandomWord);
+        const letters = _.map(words.join(" "), (char, c_index) => ({
+            char,
+            isTarget: c_index === 0,
+            isDone: false
+        }));
+        const lastIndex = letters.length - 1;
+        const currentIndex = 0;
+        const targetChar = letters[0].char;
+
+        return {
+            letters,
+            lastIndex,
+            currentIndex,
+            targetChar
+        };
+    }
+
+    export default {
+        components: {
+            Keyboard: "./Keyboardio/Keyboard.html",
+        },
+
+        data () {
+            const {
+                currentIndex,
+                targetChar,
+                lastIndex,
+                letters
+            } = makeNewText();
+
+            return {
+                currentIndex,
+                targetChar,
+                lastIndex,
+                letters,
+                pressedChars: []
+            };
+        },
+
+        methods: {
+            setNewWord () {
+                const {
+                    currentIndex,
+                    targetChar,
+                    letters,
+                    lastIndex
+                } = makeNewText();
+
+                this.set({
+                    currentIndex,
+                    targetChar,
+                    lastIndex,
+                    letters,
+                    pressedChars: []
+                });
+            },
+
+            onkeydown (event) {
+                const {
+                    targetChar,
+                    letters,
+                    currentIndex,
+                    lastIndex,
+                    pressedChars: prevPressedKeys
+                } = this.get();
+
+                if (_.isIn(["PageUp", "PageDown"], event.key)) {
+                    this.setNewWord();
+                    return;
+                }
+
+                if ((targetChar === "Enter") && (event.key === targetChar)) {
+                    this.setNewWord();
+                    return;
+                }
+
+                const pressedChars = _.uniques(
+                    _.appendTo(prevPressedKeys, event.key)
+                );
+                this.set({pressedChars});
+
+                if (_.isIn(pressedChars, targetChar)) {
+                    const newIndex = currentIndex + 1;
+
+                    if (newIndex <= lastIndex) {
+                        const newLetters = _.setPathIn(
+                            _.setPathIn(letters, `${currentIndex}.isDone`, true),
+                            `${newIndex}.isTarget`,
+                            true
+                        );
+
+                        this.set({
+                            letters: newLetters,
+                            currentIndex: newIndex,
+                            targetChar: newLetters[newIndex].char,
+                        });
+                    } else {
+                        // press enter to get new text
+                        this.set({
+                            letters: _.setPathIn(letters, "-1.isDone", true),
+                            targetChar: "Enter"
+                        });
+                    }
+                }
+            },
+
+            onkeyup (event) {
+                const {pressedChars: prevPressedKeys} = this.get();
+
+                this.set({pressedChars: _.pullFrom(prevPressedKeys, [event.key])});
+            },
+        }
+    }
+</script>
+
+<style>
+    .app {
+        width: 100%;
+        height: 100%;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        color: rgb(80, 80, 80);
+        font-family: monospace;
+    }
+
+    .text {
+        width: 100%;
+        flex: 0 0 120px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        font-size: 40px;
+    }
+
+    .text span {
+        white-space: pre; /* blanks */
+        padding: 4px;
+    }
+
+    span.target {
+        background-color: rgb(80, 80, 80);
+        color: white;
+    }
+
+    span.done {
+        background-color: lightgrey;
+        color: rgb(80, 80, 80);
+    }
+
+    .keyboard {
+        width: 100%;
+        flex: 1;
+        max-height: calc(100% - 120px); /* firefox */
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>

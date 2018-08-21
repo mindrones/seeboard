@@ -1,0 +1,5 @@
+node_modules
+build
+data/words.json
+.DS_Store
+.gh-pages
