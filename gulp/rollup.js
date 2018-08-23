@@ -40,7 +40,9 @@ const bundleOpts = {
             }
         }),
 
-        isProductionBuild && buble(),
+        isProductionBuild && buble({
+            objectAssign: "Object.assign"
+        }),
         isProductionBuild && terser()
     ],
     cache: true
