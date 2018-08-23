@@ -4,7 +4,7 @@
   "author": "Luca Bonavita - mindrones.com",
   "version": "0.0.1",
   "scripts": {
-    "newdir": "rm -rf build && mkdir build",
+    "newdir": "rm -rf build data && mkdir build data",
     "devbuild": "npm run newdir && gulp build",
     "prodbuild": "npm run newdir && gulp build --production",
     "dev": "npm run newdir && gulp",
