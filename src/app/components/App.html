@@ -42,15 +42,12 @@
             isTarget: c_index === 0,
             isDone: false
         }));
-        const lastIndex = letters.length - 1;
-        const currentIndex = 0;
-        const targetChar = letters[0].char;
 
         return {
             letters,
-            lastIndex,
-            currentIndex,
-            targetChar
+            lastIndex: letters.length - 1,
+            currentIndex: 0,
+            targetChar: letters[0].char
         };
     }
 
@@ -60,36 +57,16 @@
         },
 
         data () {
-            const {
-                currentIndex,
-                targetChar,
-                lastIndex,
-                letters
-            } = makeNewText();
-
             return {
-                currentIndex,
-                targetChar,
-                lastIndex,
-                letters,
+                ...makeNewText(),
                 pressedChars: []
             };
         },
 
         methods: {
-            setNewWord () {
-                const {
-                    currentIndex,
-                    targetChar,
-                    letters,
-                    lastIndex
-                } = makeNewText();
-
+            resetText () {
                 this.set({
-                    currentIndex,
-                    targetChar,
-                    lastIndex,
-                    letters,
+                    ...makeNewText(),
                     pressedChars: []
                 });
             },
@@ -104,12 +81,12 @@
                 } = this.get();
 
                 if (_.isIn(["PageUp", "PageDown"], event.key)) {
-                    this.setNewWord();
+                    this.resetText();
                     return;
                 }
 
                 if ((targetChar === "Enter") && (event.key === targetChar)) {
-                    this.setNewWord();
+                    this.resetText();
                     return;
                 }
 
