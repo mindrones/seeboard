@@ -924,9 +924,6 @@
             groups: ({targetKey}) => _.mapValues(keyGroups, _.some(_.is(targetKey)))
         },
 
-        onstate ({changed, current, previous}) {
-            console.log('kb', current);
-        },
         helpers: { getChar }
     }
 </script>

@@ -3,7 +3,7 @@
     on:keydown="onkeydown(event)"
 />
 <svelte:head>
-    <title>Seeboard</title>
+    <title>Seeboard ({version})</title>
 </svelte:head>
 <div class="app">
     <div class="text">
@@ -26,6 +26,7 @@
 <script>
     import _ from "lamb";
     import WORDS from "../../../data/words.json";
+    import {version} from "../../../package.json";
 
     const WORDS_AMOUNT_MAX = 3;
 
@@ -58,6 +59,7 @@
 
         data () {
             return {
+                version,
                 ...makeNewText(),
                 pressedChars: []
             };
@@ -93,6 +95,7 @@
                 const pressedChars = _.uniques(
                     _.appendTo(prevPressedKeys, event.key)
                 );
+                this.set({pressedChars});
 
                 if (_.isIn(pressedChars, targetChar)) {
                     const newIndex = currentIndex + 1;
@@ -105,7 +108,6 @@
                         );
 
                         this.set({
-                            pressedChars,
                             letters: newLetters,
                             currentIndex: newIndex,
                             targetChar: newLetters[newIndex].char
@@ -113,7 +115,6 @@
                     } else {
                         // press enter to get new text
                         this.set({
-                            pressedChars,
                             letters: _.setPathIn(letters, "-1.isDone", true),
                             targetChar: "Enter"
                         });

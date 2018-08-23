@@ -24,8 +24,7 @@ const bundleOpts = {
     input: "src/app/main.js",
     plugins: [
         alias(resolveAliases({
-            "@utils": "src/utils",
-            "@data": "data"
+            "@utils": "src/utils"
         })),
         resolve(),
         commonjs(),
