@@ -93,7 +93,6 @@
                 const pressedChars = _.uniques(
                     _.appendTo(prevPressedKeys, event.key)
                 );
-                this.set({pressedChars});
 
                 if (_.isIn(pressedChars, targetChar)) {
                     const newIndex = currentIndex + 1;
@@ -106,13 +105,15 @@
                         );
 
                         this.set({
+                            pressedChars,
                             letters: newLetters,
                             currentIndex: newIndex,
-                            targetChar: newLetters[newIndex].char,
+                            targetChar: newLetters[newIndex].char
                         });
                     } else {
                         // press enter to get new text
                         this.set({
+                            pressedChars,
                             letters: _.setPathIn(letters, "-1.isDone", true),
                             targetChar: "Enter"
                         });
