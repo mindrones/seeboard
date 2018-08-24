@@ -901,8 +901,8 @@
 
     // chars
 
-    const charToKey = invertObj(keyToChar);
     const getChar = keyId => keyToChar[keyId];
+    const charToKey = invertObj(keyToChar);
     const getInCharToKey = _.partial(_.getIn, [charToKey, _]);
     const getInCharToKeyCond = _.condition(
         _.isUndefined,
